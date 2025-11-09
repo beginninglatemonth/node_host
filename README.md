@@ -1,8 +1,10 @@
-# Clash Config File Hosting Service (Personal Lightweight Edition)
+# Clash 配置文件托管服务（个人轻量版）
 
-本项目为个人使用的轻量级 Clash 配置文件托管与在线管理服务，可通过网页上传、编辑 Clash 配置文件，并生成访问链接或扫码导入到 Clash Meta / Clash for Android 等客户端。
+<!-- # Clash Config File Hosting Service (Personal Lightweight Edition) -->
 
-本服务适合旁路由、自用机场面板、本地 Proxy 管理等场景。
+本项目为个人使用的轻量级 Clash 配置文件托管与在线管理服务，可通过网页上传 Clash 配置文件，并生成访问链接或扫码导入到 Clash Meta / Clash for Android 等客户端。
+
+本服务适合本地 Proxy 管理等场景。
 
 ---
 
@@ -21,6 +23,19 @@
 
 ---
 
+## 页面说明
+
+### 主页 `/`
+
+- 文件上传按钮
+- 已上传文件列表（文件名 / 编辑 / 查看链接 / 显示二维码 / 删除）
+  - 点击“编辑”可选择新文件直接覆盖已有配置文件
+  - 点击“链接”可复制 Clash 导入 URL
+  - 点击“二维码”直接使用手机扫码导入(**需软件支持扫码导入**)
+  - 点击“删除”可直接删除已有配置文件
+
+---
+
 ## 截图演示
 
 ![演示1](docs/1.png)
@@ -29,15 +44,22 @@
 
 ---
 
-## 页面说明
+## 文件结构
 
-### 主页 `/`
+``` csharp
+clash-host/
+├─ data/                   # 存储上传的配置文件
+├─ templates/              # 前端模板（HTML）
+│  ├─ index.html
+│  └─ edit.html
+├─ static/                 # CSS / JS / 前端资源
+│  └─ style.css
+├─ Dockerfile
+├─ docker-compose.yml
+├─ requirements.txt
+└─ app.py                  # Flask 主程序
 
-- 文件上传按钮
-- 已上传文件列表（文件名 / 编辑 / 查看链接 / 显示二维码）
-- 点击“编辑”可选择新文件直接覆盖存量配置文件
-- 点击“链接”可复制 Clash 导入 URL
-- 点击“二维码”直接使用手机扫码导入
+```
 
 ---
 
@@ -73,7 +95,7 @@ docker build -t clash-config-server .
 ```bash
 docker run -d \
   -p 8000:8000 \
-  -v /path/to/data:/app/storage \
+  -v /ClashHost/data:/app/data \
   --name clash-config-server \
   clash-config-server
 ```
@@ -82,6 +104,19 @@ docker run -d \
 
 ```cpp
 http://<服务器IP>:8000
+```
+
+---
+
+### docker-compose
+
+#### 制作镜像
+
+```bash
+docker compose up --build -d
+
+访问页面
+http://<服务器IP>:5000
 ```
 
 ---
@@ -96,7 +131,7 @@ http://<服务器IP>:8000
 http://<服务器IP>:8000/raw/<文件名>.yaml
 ```
 
-或手机直接扫码导入。
+或手机直接扫码导入(**需软件支持扫码导入**)。
 
 ---
 
@@ -108,7 +143,7 @@ http://<服务器IP>:8000/raw/<文件名>.yaml
 
 3. 点击 链接 获取可供 Clash 导入的 Raw 地址
 
-4. 点击 QR 可扫描该链接到手机
+4. 点击 QR 可扫描该链接到手机(**需软件支持扫码导入**)
 
 5. 若需更新配置，点击 编辑 上传新文件覆盖即可
 
@@ -124,26 +159,7 @@ http://<服务器IP>:8000/raw/<文件名>.yaml
 
 ---
 
-## 文件结构
-
-``` csharp
-clash-host/
-├─ data/                   # 存储上传的配置文件
-├─ templates/              # 前端模板（HTML）
-│  ├─ index.html
-│  └─ edit.html
-├─ static/                 # CSS / JS / 前端资源
-│  └─ style.css
-├─ Dockerfile
-├─ docker-compose.yml
-├─ requirements.txt
-└─ app.py                  # Flask 主程序
-
-```
-
----
-
-## 🛠️ 可能遇到的问题
+## 可能遇到的问题
 
 | 问题        | 说明        |
 | ----------- | ----------- |
