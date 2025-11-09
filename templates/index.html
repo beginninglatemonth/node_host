@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clash Config Host</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Clash 配置托管（个人内网）</h1>
+      <p class="muted">
+        上传后会生成 raw 链接，Clash 可直接通过 URL 导入。覆盖同名文件即可更新配置。
+      </p>
+    </header>
+
+    <section class="upload-card">
+      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required />
+        <button class="btn primary" type="submit">上传</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>已上传文件</h2>
+      {% if files %}
+      <table class="file-table">
+        <thead>
+          <tr>
+            <th>文件名</th>
+            <th>编辑 (覆盖)</th>
+            <th>链接</th>
+            <th>QR</th>
+            <th>删除</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in files %}
+          <tr>
+            <td class="fname">{{ f.name }}</td>
+            <td><a class="btn small" href="{{ f.edit_url }}">编辑</a></td>
+            <td>
+              <input readonly class="raw-input" value="{{ f.raw_url }}" onclick="this.select()" />
+              <a class="btn small subtle" href="{{ f.raw_url }}" target="_blank">打开</a>
+            </td>
+            <td>
+              <button class="btn small" onclick="showQR('{{ f.name }}')">
+                QR
+              </button>
+            </td>
+            <td>
+              <button class="btn small" onclick="deleteFile('{{ f.name }}')">
+                删除
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>暂无上传记录</p>
+      {% endif %}
+    </section>
+
+    <footer>
+      <small>说明：覆盖同名文件会直接替换 raw 链接内容，Clash 刷新配置即可获取新内容。</small>
+    </footer>
+  </div>
+
+  <!-- QR Modal -->
+  <div id="qrModal" class="modal" style="display: none">
+    <!-- <div id="qrModal" class="modal"> -->
+    <div class="modal-content">
+      <span class="close" onclick="hideQR()">&times;</span>
+      <h3>扫码导入配置</h3>
+      <div id="qrImg"></div>
+      <p id="qrText"></p>
+    </div>
+  </div>
+
+  <script>
+    function showQR(filename) {
+      fetch("/raw/" + encodeURIComponent(filename))
+        .then((r) => {
+          if (!r.ok) throw new Error("无法获取 raw");
+          return fetch("/qr/" + encodeURIComponent(filename));
+        })
+        .then((res) => res.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+          document.getElementById("qrImg").innerHTML =
+            '<img src="' + url + '" alt="QR">';
+          document.getElementById("qrText").textContent =
+            location.origin + "/raw/" + filename;
+          //document.getElementById("qrModal").style.display = "block";
+          document.getElementById("qrModal").style.display = "flex";
+        })
+        .catch((e) => alert("无法生成 QR: " + e));
+    }
+    function hideQR() {
+      document.getElementById("qrModal").style.display = "none";
+    }
+    const modal = document.getElementById("qrModal");
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+
+    function deleteFile(filename) {
+      if (!confirm("确定删除此文件吗？")) return;
+      fetch("/delete/" + encodeURIComponent(filename), { method: "POST" })
+        .then((r) => {
+          if (!r.ok) throw new Error("无法删除");
+          location.reload(); // 刷新页面
+        })
+        .catch((e) => alert("删除失败: " + e));
+    }
+
+  </script>
+</body>
+
+</html>
