@@ -174,7 +174,7 @@ def raw_file(filename):
     path = os.path.join(app.config["UPLOAD_FOLDER"], safe)
     if not os.path.exists(path):
         abort(404)
-    # 返回纯文本（yaml/clash 配置）
+    # 返回纯文本（Node配置）
     return send_from_directory(
         app.config["UPLOAD_FOLDER"],
         safe,

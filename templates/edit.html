@@ -1,37 +1,33 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>编辑 - {{ filename }}</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>编辑：{{ filename }}</h1>
-      </header>
 
-      <section class="upload-card">
-        <form
-          action="{{ url_for('edit_file', filename=filename) }}"
-          method="post"
-          enctype="multipart/form-data"
-        >
-          <input type="file" name="file" required />
-          <button class="btn primary" type="submit">覆盖并保存</button>
-        </form>
-        <p>
-          Raw 链接：<a href="{{ raw_url }}" target="_blank">{{ raw_url }}</a>
-        </p>
-        <p>QR：</p>
-        <img src="{{ qr_data }}" alt="qr" />
-      </section>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>编辑 - {{ filename }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
 
-      <p><a href="{{ url_for('index') }}">返回首页</a></p>
-    </div>
-  </body>
+<body>
+  <div class="container">
+    <header>
+      <h1>编辑：{{ filename }}</h1>
+    </header>
+
+    <section class="upload-card">
+      <form action="{{ url_for('edit_file', filename=filename) }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required />
+        <button class="btn primary" type="submit">覆盖并保存</button>
+      </form>
+      <p>
+        Raw 链接：<a href="{{ raw_url }}" target="_blank">{{ raw_url }}</a>
+      </p>
+      <p>QR：</p>
+      <img src="{{ qr_data }}" alt="qr" />
+    </section>
+
+    <p><a href="{{ url_for('index') }}">返回首页</a></p>
+  </div>
+</body>
+
 </html>
