@@ -1,8 +1,8 @@
 version: "3.8"
 services:
-  clash-host:
+  node-host:
     build: .
-    container_name: clash_host
+    container_name: node_host
     ports:
       - "5000:5000"
     volumes:
